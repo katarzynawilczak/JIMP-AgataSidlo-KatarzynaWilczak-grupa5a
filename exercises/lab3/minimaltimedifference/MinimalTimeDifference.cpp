@@ -6,7 +6,7 @@
 #include "MinimalTimeDifference.h"
 
 
-unsigned int ToMinutes(std::string time_HH_MM){
+unsigned int minimaltimedifference::ToMinutes(std::string time_HH_MM){
     int hour,min;
     std::string str1, str2;
 
@@ -36,13 +36,12 @@ unsigned int ToMinutes(std::string time_HH_MM){
 
 }
 
-unsigned int MinimalTimeDifference(std::vector<std::string> times) {
+unsigned int minimaltimedifference::MinimalTimeDifference(std::vector<std::string> times) {
     int min=20000,min2=0;
-    times.reserve(20000);
 
     for (int n = 0; n < times.size() - 1; n++) {
         for (int m = n+1; m < times.size(); m++) {
-            if (abs(ToMinutes(times[n]) - ToMinutes(times[m])) > 720) {
+            if (abs(ToMinutes(times[n]) - ToMinutes(times[m])) > 12*60) {
                 if (abs(ToMinutes(times[n]) - ToMinutes(times[m])) > min2) {
                     min2 = abs(ToMinutes(times[n]) - ToMinutes(times[m]));
                 }
@@ -54,7 +53,7 @@ unsigned int MinimalTimeDifference(std::vector<std::string> times) {
             }
         }
     }
-    min2=1440-min2;
+    min2=24*60-min2;
     if(min<min2)
         return min;
     else
