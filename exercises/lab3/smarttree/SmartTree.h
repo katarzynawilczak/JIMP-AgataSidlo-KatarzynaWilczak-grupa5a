@@ -22,6 +22,8 @@ namespace datastructures {
 
     std::string DumpTree(const std::unique_ptr <SmartTree> &tree);
 
+    std::unique_ptr <SmartTree> RestoreTree1(const std::string &tree, int *i);
+
     std::unique_ptr <SmartTree> RestoreTree(const std::string &tree);
 }
 
