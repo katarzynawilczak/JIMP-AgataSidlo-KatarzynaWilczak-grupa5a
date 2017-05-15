@@ -7,7 +7,8 @@
 #include <vector>
 #include <string>
 #include <functional>
-
+#include <initializer_list>
+#include <experimental/optional>
 
 namespace academia {
     class Serializable;
@@ -23,6 +24,8 @@ namespace academia {
         virtual void ArrayField(const std::string &field_name, const std::vector<std::reference_wrapper<const Serializable>> &value)=0;
         virtual void Header(const std::string &object_name)=0;
         virtual void Footer(const std::string &object_name)=0;
+
+    protected:
         std::ostream* out_;
 
     };
@@ -52,12 +55,12 @@ namespace academia {
     class Building : public Serializable{
     public:
         void Serialize(Serializer* ptr) const;
-        Building(int id, const std::string name, const std::vector<std::reference_wrapper<const Serializable>> &rooms) : id_{id}, name_{name}, rooms_{rooms} {}
-
+        Building(int id, std::string name, std::vector<Room> rooms) : id_{id}, name_{name}, rooms_{rooms} {}
+        int Id() const;
     private:
         int id_;
-        const std::string name_;
-        const std::vector<std::reference_wrapper<const Serializable>> rooms_;
+        std::string name_;
+        std::vector<Room> rooms_;
     };
 
   class XmlSerializer : public Serializer{
@@ -90,9 +93,24 @@ namespace academia {
 
     };
 
-  //  class BuildingRepository{
+    class BuildingRepository{
+    public:
+        BuildingRepository();
+        BuildingRepository(const std::initializer_list<Building> &buildings);
+        void StoreAll(Serializer* serializer) const;
+        void Add(const Building &building);
+        std::experimental::optional<Building> operator[](int id)const{
+            for (auto &it: buildings_) {
+                if (it.Id()==id) {
+                    return std::experimental::make_optional(it);
+                }
+            }
+            return std::experimental::optional<Building>();
+        }
+    private:
+        std::vector<Building> buildings_;
 
-    //};
+    };
 
 }
 

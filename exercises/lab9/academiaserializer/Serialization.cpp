@@ -1,4 +1,5 @@
 #include <functional>
+#include <vector>
 #include"Serialization.h"
 
 namespace academia {
@@ -23,11 +24,16 @@ namespace academia {
 
     }
 
+
     void Building::Serialize(Serializer *ptr) const{
         ptr->Header("building");
         ptr->IntegerField("id", id_);
         ptr->StringField("name", name_);
-        ptr->ArrayField("rooms", rooms_);
+        std::vector<std::reference_wrapper<const Serializable>> rooms;
+        for (const Serializable &i : rooms_){
+            rooms.push_back(i);
+        }
+        ptr->ArrayField("rooms", rooms);
         ptr->Footer("building");
     }
 
@@ -113,6 +119,35 @@ namespace academia {
     }
     void JsonSerializer::Footer(const std::string &object_name){
         *out_ <<"}";
-
     }
+
+    BuildingRepository::BuildingRepository() {
+        buildings_.clear();
+    }
+    BuildingRepository::BuildingRepository(const std::initializer_list<Building> &buildings) {
+        for(const Building &b : buildings){
+            buildings_.push_back(b);
+        }
+    }
+    int Building::Id() const{
+        return id_;
+    }
+
+    void BuildingRepository::StoreAll(Serializer* serializer) const{
+        serializer->Header("building_repository");
+        std::vector<std::reference_wrapper<const Serializable>> buildings;
+        for (const Serializable &i : buildings_){
+            buildings.push_back(i);
+        }
+        serializer->ArrayField("buildings", buildings);
+        serializer->Footer("building_repository");
+    }
+
+    void BuildingRepository::Add(const Building &building){
+        buildings_.push_back(building);
+    }
+
+
 }
+
+
